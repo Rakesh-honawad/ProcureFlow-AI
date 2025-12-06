@@ -1,0 +1,5 @@
+{
+  "name": "RFP HELP",
+  "description": "An intelligent RFP management system that streamlines procurement. Create RFPs with natural language, automatically parse vendor email responses, and get AI-driven vendor recommendations.",
+  "requestFramePermissions": []
+}
