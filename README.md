@@ -419,6 +419,7 @@ npm run lint
 ### ✅ Pre-Configured API Keys
 
 **Good news!** All API keys and configurations are already set up for you. You don't need to create any accounts or generate keys.
+#### I HAVE SHARED .ENV FILE IN THE FORM ADD IT LOCATION BACKEND/SRC
 
 The `.env` file provided by the project author contains:
 - ✅ **SendGrid API Key** - Already configured and verified
