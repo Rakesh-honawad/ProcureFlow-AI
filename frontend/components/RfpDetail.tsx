@@ -11,13 +11,12 @@ const RfpDetail: React.FC = () => {
   const navigate = useNavigate();
   const { rfps, vendors, updateRfp, getProposalsByRfpId } = useAppContext();
   
-  // State management
   const [activeTab, setActiveTab] = useState<'overview' | 'proposals' | 'compare'>('overview');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isTriggeringWebhook, setIsTriggeringWebhook] = useState(false);
 
-  // Safety check for invalid ID
+
   if (!id) {
     return (
       <div className="p-8 text-center">
@@ -35,7 +34,7 @@ const RfpDetail: React.FC = () => {
 
   const rfp = rfps.find(r => r.id === id);
   
-  // Loading state while RFP loads
+ 
   if (!rfp) {
     return (
       <div className="p-8 text-center">
@@ -77,7 +76,7 @@ const RfpDetail: React.FC = () => {
 
       console.log('📤 Sending RFP to backend...');
       
-      // Call backend to send email
+      
       const response = await fetch('http://localhost:4000/api/rfps/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +91,7 @@ const RfpDetail: React.FC = () => {
       const result = await response.json();
       console.log('✅ RFP sent successfully:', result);
 
-      // Update RFP status in frontend
+    
       updateRfp(id, { 
         status: RFPStatus.SENT
       });
@@ -109,59 +108,56 @@ const RfpDetail: React.FC = () => {
     }
   };
 
-  // Trigger webhook for demo
- // Trigger webhook for demo
-const triggerWebhook = async () => {
-  setIsTriggeringWebhook(true);
-  
-  try {
-    const response = await fetch('http://localhost:4000/api/email/inbound', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'vendor.sales@techsupply.com',
-        to: `rfp-${rfp.id}@procureflow.com`,
-        subject: 'Re: RFP Response - Our Proposal',
-        text: `Dear Procurement Team,
+ 
+  const triggerWebhook = async () => {
+    setIsTriggeringWebhook(true);
 
-Thank you for the opportunity to submit our proposal for the CCTV Surveillance project.
+    try {
+   
+      const vendor = (vendors.find(v => rfp.selectedVendorIds?.includes(v.id)) || vendors[0]) || { name: 'Vendor', email: 'vendor.sales@techsupply.com' };
+      const fromEmail = vendor.email || `vendor.sales@${(vendor.name || 'vendor').toString().replace(/\s+/g, '').toLowerCase()}.com`;
 
-PRICING BREAKDOWN:
-- CCTV Cameras (High Resolution): $15,000
-- Installation and Cabling: $8,500
-- DVR/NVR System: $6,200
-- Monitoring Software: $3,800
-- Training and Documentation: $2,250
+      const totalQty = rfp.items.reduce((sum, it) => sum + (it.quantity || 1), 0);
+      const unitEstimate = totalQty > 0 ? Math.max(1, Math.round(rfp.budget / totalQty)) : Math.round(rfp.budget);
 
-TOTAL QUOTE: $35,750
+      const itemsText = rfp.items.map(item => {
+        const qty = item.quantity || 1;
+        const est = unitEstimate * qty;
+        const specs = item.specs ? ` (${item.specs})` : '';
+        return `- ${item.description}${specs}: Qty ${qty} — est. $${est.toLocaleString()}`;
+      }).join('\n');
 
-DELIVERY TIMELINE: 3-4 weeks from order confirmation
-WARRANTY: 2 years on all equipment, 5 years on installation
-PAYMENT TERMS: 30% advance, 70% on completion
-ADDITIONAL: Free maintenance for first year included
+      const totalEstimate = rfp.items.reduce((sum, it) => sum + unitEstimate * (it.quantity || 1), 0);
+      const requirementsText = rfp.requirements && rfp.requirements.length ? rfp.requirements.map(r => `- ${r}`).join('\n') : 'None listed';
 
-All equipment meets government specifications. We look forward to working with you.
+      const subject = `Re: RFP Response - ${rfp.title}`;
+      const text = `Dear Procurement Team,\n\nThank you for the opportunity to submit our proposal for ${rfp.title}.\n\nWe have reviewed your requirements and propose the following:\n\nPRICING BREAKDOWN:\n${itemsText}\n\nTOTAL QUOTE: $${totalEstimate.toLocaleString()}\n\nDELIVERY TIMELINE: ${Math.max(1, Math.ceil(rfp.items.length / 2))}-${Math.max(2, Math.ceil(rfp.items.length))} weeks from order confirmation\nWARRANTY: 1 year on services, 2 years on equipment\nPAYMENT TERMS: 30% advance, balance on completion\n\nVENDOR COMPLIANCE:\n${requirementsText}\n\nWe look forward to working with you.\n\nBest regards,\n${vendor.name || 'Sales Team'}`;
 
-Best regards,
-Sales Team
-TechSupply Co.`
-      })
-    });
+      const response = await fetch('http://localhost:4000/api/email/inbound', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: `rfp-${rfp.id}@procureflow.com`,
+          subject,
+          text
+        })
+      });
 
-    if (response.ok) {
-      // ✅ NO RELOAD - Just show success message
-      alert('✅ Vendor response received! Check the proposals list below.');
-      setIsTriggeringWebhook(false);
-      // Proposals will appear automatically via polling (every 3 seconds)
-    } else {
-      alert('❌ Failed to process response. Check backend logs.');
+      if (response.ok) {
+     
+        alert('✅ Vendor response received! Check the proposals list below.');
+        setIsTriggeringWebhook(false);
+       
+      } else {
+        alert('❌ Failed to process response. Check backend logs.');
+        setIsTriggeringWebhook(false);
+      }
+    } catch (error) {
+      alert('❌ Error: Make sure backend is running on port 4000');
       setIsTriggeringWebhook(false);
     }
-  } catch (error) {
-    alert('❌ Error: Make sure backend is running on port 4000');
-    setIsTriggeringWebhook(false);
-  }
-};
+  };
 
 
   return (

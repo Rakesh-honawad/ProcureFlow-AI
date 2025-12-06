@@ -2,14 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { RFP, Vendor, Proposal, RFPStatus } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-// Initial vendors data
+
 const INITIAL_VENDORS: Vendor[] = [
-  { id: uuidv4(), name: 'TechSupply Co', email: 'sales@techsupply.com', category: 'Hardware', rating: 4.5 },
+  { id: uuidv4(), name: 'Raki service', email: 'rakeshhonawad46@gmail.com', category: 'service', rating: 4.5 },
   { id: uuidv4(), name: 'Office Solutions Ltd', email: 'info@officesolutions.com', category: 'Office Supplies', rating: 4.2 },
   { id: uuidv4(), name: 'ElectroWorld', email: 'contact@electroworld.com', category: 'Electronics', rating: 4.8 },
 ];
 
-// Context type definition
 interface AppContextType {
   rfps: RFP[];
   vendors: Vendor[];
@@ -37,7 +36,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [vendors, setVendors] = useState<Vendor[]>(INITIAL_VENDORS);
   const [proposals, setProposals] = useState<Proposal[]>([]);
 
-  // 1. Load from localStorage on mount
+
   useEffect(() => {
     const savedRfps = localStorage.getItem('rfps');
     const savedVendors = localStorage.getItem('vendors');
@@ -48,7 +47,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (savedProposals) setProposals(JSON.parse(savedProposals));
   }, []);
 
-  // 2. Save to localStorage whenever data changes
+
   useEffect(() => {
     localStorage.setItem('rfps', JSON.stringify(rfps));
   }, [rfps]);
@@ -61,11 +60,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('proposals', JSON.stringify(proposals));
   }, [proposals]);
 
-  // Sync data with backend
+
   const API_BASE = 'http://localhost:4000';
 
   useEffect(() => {
-    // Load initial data from backend
+ 
     const loadFromBackend = async () => {
       try {
         const [rfpsRes, vendorsRes, proposalsRes] = await Promise.all([
@@ -96,7 +95,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     loadFromBackend();
 
-    // Poll for new proposals every 3 seconds
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`${API_BASE}/api/proposals`);
@@ -111,7 +109,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => clearInterval(interval);
   }, []);
 
-  // Sync RFPs to backend when they change
+ 
   useEffect(() => {
     if (rfps.length === 0) return;
     
@@ -128,7 +126,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   }, [rfps]);
 
-  // Sync vendors to backend
+  
   useEffect(() => {
     if (vendors.length === 0) return;
     
@@ -145,7 +143,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   }, [vendors]);
 
-  // ✅ IMPLEMENT ALL FUNCTIONS (These were missing!)
+ 
   const addRfp = (rfp: RFP) => {
     setRfps(prev => [...prev, rfp]);
   };
@@ -178,7 +176,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return proposals.filter(p => p.rfpId === rfpId);
   };
 
-  // ✅ PROVIDE ALL FUNCTIONS IN CONTEXT VALUE
+ 
   const value: AppContextType = {
     rfps,
     vendors,
@@ -198,4 +196,4 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       {children}
     </AppContext.Provider>
   );
-}; // ✅ Closing brace for component
+}; 

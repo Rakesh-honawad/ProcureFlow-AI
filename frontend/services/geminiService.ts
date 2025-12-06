@@ -80,9 +80,7 @@ const analysisSchema: Schema = {
 
 export const geminiService = {
   
-  /**
-   * Generates a structured RFP object from a natural language chat message.
-   */
+
   async generateRfpStructure(userPrompt: string): Promise<Partial<RFP>> {
     try {
       const response = await ai.models.generateContent({
@@ -92,7 +90,7 @@ export const geminiService = {
         config: {
           responseMimeType: "application/json",
           responseSchema: rfpSchema,
-          temperature: 0.2, // Low temperature for factual extraction
+          temperature: 0.2, 
         }
       });
       
@@ -105,9 +103,7 @@ export const geminiService = {
     }
   },
 
-  /**
-   * Parses raw email text OR file attachment from a vendor into a structured Proposal.
-   */
+  
   async parseVendorProposal(
     input: { text?: string; file?: { mimeType: string; data: string } }, 
     rfpContext: string
@@ -155,12 +151,9 @@ export const geminiService = {
     }
   },
 
-  /**
-   * Compares multiple proposals and provides a recommendation.
-   */
   async compareProposals(rfp: RFP, proposals: Proposal[], vendors: any[]): Promise<any> {
     try {
-      // Enrich proposals with vendor names for the AI context
+      
       const enrichedProposals = proposals.map(p => {
         const vendor = vendors.find(v => v.id === p.vendorId);
         return {
@@ -194,7 +187,7 @@ export const geminiService = {
         config: {
           responseMimeType: "application/json",
           responseSchema: analysisSchema,
-          temperature: 0.4, // Balanced for reasoning
+          temperature: 0.4, 
         }
       });
 

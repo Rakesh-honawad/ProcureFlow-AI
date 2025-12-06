@@ -11,9 +11,7 @@ const AnalyticsDashboard: React.FC = () => {
   const { rfps, vendors, proposals } = useAppContext();
   const [timeRange, setTimeRange] = useState('YTD');
 
-  // --- Data Preparation ---
 
-  // 1. Spend Trend (Area Chart)
   const rfpsWithDate = rfps
     .map(r => ({ ...r, date: new Date(r.createdAt) }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -26,7 +24,7 @@ const AnalyticsDashboard: React.FC = () => {
       : null
   }));
 
-  // 2. Category Spend (Donut)
+
   const categorySpend: Record<string, number> = {};
   rfps.forEach(rfp => {
     // Estimate category based on first item or assign 'General'
@@ -44,8 +42,7 @@ const AnalyticsDashboard: React.FC = () => {
     value: categorySpend[cat]
   })).sort((a, b) => b.value - a.value);
 
-  // 3. Vendor Performance Radar
-  // Mocking detailed scores based on the single 'rating' field for demonstration
+
   const topVendors = [...vendors].sort((a, b) => b.rating - a.rating).slice(0, 3);
   const radarData = [
     { subject: 'Reliability', fullMark: 5 },
@@ -55,7 +52,6 @@ const AnalyticsDashboard: React.FC = () => {
     { subject: 'Communication', fullMark: 5 },
   ];
 
-  // We artificially distribute the single 5-star rating across these axes for the visual
   const processedRadarData = radarData.map(dim => {
     const result: any = { subject: dim.subject };
     topVendors.forEach((v, i) => {

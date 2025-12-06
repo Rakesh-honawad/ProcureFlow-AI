@@ -81,9 +81,7 @@ const analysisSchema: Schema = {
 
 export const aiService = {
   
-  /**
-   * Generates a structured RFP object from a natural language chat message.
-   */
+
   async generateRfpStructure(userPrompt: string): Promise<Partial<RFP>> {
     try {
       const response = await client.models.generateContent({
@@ -106,9 +104,7 @@ export const aiService = {
     }
   },
 
-  /**
-   * Parses raw email text OR file attachment from a vendor into a structured Proposal.
-   */
+  
   async parseVendorProposal(
     input: { text?: string; file?: { mimeType: string; data: string } }, 
     rfpContext: string
@@ -156,12 +152,10 @@ export const aiService = {
     }
   },
 
-  /**
-   * Compares multiple proposals and provides a recommendation.
-   */
+
   async compareProposals(rfp: RFP, proposals: Proposal[], vendors: any[]): Promise<any> {
     try {
-      // Enrich proposals with vendor names for the AI context
+  
       const enrichedProposals = proposals.map(p => {
         const vendor = vendors.find(v => v.id === p.vendorId);
         return {

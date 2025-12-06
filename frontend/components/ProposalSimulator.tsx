@@ -89,7 +89,7 @@ const ProposalSimulator: React.FC<Props> = ({ rfp, onSuccess }) => {
         setFile({
           name: f.name,
           type: f.type,
-          data: result // Keep full data URL for now
+          data: result 
         });
       };
       reader.readAsDataURL(f);
@@ -123,10 +123,10 @@ const ProposalSimulator: React.FC<Props> = ({ rfp, onSuccess }) => {
         } : undefined
       };
 
-      // 3. AI Parsing
+  
       const parsedData = await aiService.parseVendorProposal(input, rfpContext);
 
-      // 4. Construct full object
+      
       const newProposal: Proposal = {
         id: uuidv4(),
         rfpId: rfp.id,
@@ -141,11 +141,10 @@ const ProposalSimulator: React.FC<Props> = ({ rfp, onSuccess }) => {
         paymentTerms: parsedData.paymentTerms || 'Unknown',
       };
 
-      // 5. Save
       addProposal(newProposal);
       onSuccess();
       
-      // Reset
+ 
       setEmailContent('');
       setSelectedVendorId('');
       clearFile();

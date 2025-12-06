@@ -18,7 +18,7 @@ const VendorList: React.FC = () => {
     rating: 0 // Default
   });
 
-  // Extract unique categories for the filter dropdown
+
   const uniqueCategories = ['All', ...Array.from(new Set(vendors.map(v => v.category))).sort()];
 
   const filteredVendors = vendors.filter(v => {
@@ -80,7 +80,6 @@ const VendorList: React.FC = () => {
     return colors[category] || 'bg-slate-800 text-slate-300 border-slate-700';
   };
 
-  // Generate a distinct gradient for the avatar based on the name length
   const getAvatarGradient = (name: string) => {
     const gradients = [
       'from-indigo-500 to-blue-600',
